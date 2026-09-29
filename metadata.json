@@ -1,0 +1,6 @@
+{
+  "name": "AI Surplus Matcher for Rythu Bazaar",
+  "description": "Smart vegetable surplus redistribution platform connecting Rythu Bazaar farmers with NGOs, community kitchens, animal shelters, and composting units to eliminate food waste.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
