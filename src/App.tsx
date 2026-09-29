@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { FarmerView } from './components/farmer/FarmerView';
 import { RecipientView } from './components/recipient/RecipientView';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { N8nChatWidget } from './components/chat/N8nChatWidget';
 import { 
   Sprout, 
   Heart, 
@@ -56,6 +57,8 @@ export default function App() {
             </div>
           </div>
         </footer>
+        {/* Floating n8n AI Chat Assistant */}
+        <N8nChatWidget />
       </div>
     </AppProvider>
   );

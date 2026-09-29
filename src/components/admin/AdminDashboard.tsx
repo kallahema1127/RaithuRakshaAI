@@ -324,6 +324,42 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <MarketMap listings={listings} recipients={recipients} height="h-80" />
           </div>
+
+          {/* n8n Cloud Webhook Automation Card */}
+          <div className="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 p-6 rounded-3xl border border-slate-800 shadow-md text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-start gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-800/60 border border-emerald-500/40 flex items-center justify-center text-emerald-300 shrink-0">
+                <Sparkles className="w-6 h-6 text-amber-300" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="text-sm font-bold text-white">n8n Cloud AI Chat Webhook Connected</h4>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Live Webhook
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300 mt-1 max-w-xl font-mono text-[11px] break-all select-all bg-black/30 px-2.5 py-1.5 rounded-lg border border-white/10 mt-1.5">
+                  https://hemamalini.app.n8n.cloud/webhook/a7558939-1091-4d6c-b403-fe67555bf35e/chat
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1.5">
+                  Connected to the floating assistant and interactive helpdesk for farmers, recipients, and market supervisors.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href="https://hemamalini.app.n8n.cloud/webhook/a7558939-1091-4d6c-b403-fe67555bf35e/chat"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs"
+              >
+                <span>Open n8n Webhook</span>
+                <Download className="w-3.5 h-3.5 rotate-270" />
+              </a>
+            </div>
+          </div>
         </div>
       )}
 

@@ -11,7 +11,9 @@ import {
   TrendingUp, 
   ShieldCheck, 
   IndianRupee,
-  Leaf
+  Leaf,
+  Bot,
+  Sparkles
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -106,6 +108,17 @@ export const Navbar: React.FC = () => {
                   <span className="font-normal text-emerald-600 text-[10px]">recovered</span>
                 </div>
               </div>
+
+              {/* n8n AI Assistant button */}
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('open-n8n-chat'))}
+                className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow transition flex items-center gap-1.5 cursor-pointer"
+                title="Chat with n8n AI Assistant"
+              >
+                <Bot className="w-4 h-4" />
+                <span className="hidden md:inline">AI Chat</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
+              </button>
 
               {/* Notification Bell */}
               <button

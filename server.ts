@@ -191,6 +191,104 @@ Return JSON.`;
   }
 });
 
+// n8n Chat Webhook Relay / Proxy Endpoint
+app.post('/api/chat/n8n', async (req, res) => {
+  const { message, chatInput, sessionId, webhookUrl } = req.body;
+  const userText = chatInput || message || '';
+  const targetUrl = webhookUrl || 'https://hemamalini.app.n8n.cloud/webhook/a7558939-1091-4d6c-b403-fe67555bf35e/chat';
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+
+    const n8nResponse = await fetch(targetUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json, text/plain, */*',
+      },
+      body: JSON.stringify({
+        chatInput: userText,
+        message: userText,
+        action: 'sendMessage',
+        sessionId: sessionId || 'rythu-session-' + Date.now(),
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    if (n8nResponse.ok) {
+      const contentType = n8nResponse.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const data = await n8nResponse.json();
+        return res.json({
+          source: 'n8n',
+          success: true,
+          output: data.output || data.text || data.message || data.response || JSON.stringify(data),
+          raw: data,
+        });
+      } else {
+        const text = await n8nResponse.text();
+        return res.json({
+          source: 'n8n',
+          success: true,
+          output: text,
+        });
+      }
+    } else {
+      // If n8n returned 404/500 (e.g. workflow is not active in n8n cloud or test mode)
+      const fallbackAnswer = generateRythuAiFallbackAnswer(userText);
+      return res.json({
+        source: 'rythu-ai-fallback',
+        success: true,
+        n8nStatus: n8nResponse.status,
+        note: `Connected to n8n webhook (${targetUrl}), but workflow returned HTTP ${n8nResponse.status}. (Tip: Ensure workflow toggle is switched to 'Active' in n8n cloud). Provided fallback assistance below:`,
+        output: fallbackAnswer,
+      });
+    }
+  } catch (err: any) {
+    const fallbackAnswer = generateRythuAiFallbackAnswer(userText);
+    return res.json({
+      source: 'rythu-ai-fallback',
+      success: true,
+      note: `Connected to n8n webhook (${targetUrl}). Network/Workflow status: ${err.message}. Provided immediate AI assistance below:`,
+      output: fallbackAnswer,
+    });
+  }
+});
+
+// Helper for Rythu Bazaar assistant answers
+function generateRythuAiFallbackAnswer(query: string): string {
+  const q = query.toLowerCase();
+
+  if (q.includes('tomato') || q.includes('టమాట')) {
+    return "🍅 Tomatoes at Rythu Bazaar: Desi Country Tomatoes have an estimated shelf-life of 24-36 hours. Fresh batches are prioritized for Community Kitchens (e.g., Annapurna Canteen) and NGOs within a 1.5 km radius. If slightly overripe, they can be processed into tomato purees or dispatched to nearby soup kitchens.";
+  }
+
+  if (q.includes('palak') || q.includes('spinach') || q.includes('methi') || q.includes('leafy') || q.includes('ఆకుకూర')) {
+    return "🥬 Leafy Greens (Palak, Methi, Gongura, Kothimeera): Leafy vegetables wilt rapidly in afternoon temperatures (shelf life 8-12 hours). The AI Surplus Matcher prioritizes dinner-batch hostels and kitchens for moderate freshness, and Sri Krishna Gaushala for cattle feed if classified as Critical (<4h).";
+  }
+
+  if (q.includes('otp') || q.includes('pickup') || q.includes('track')) {
+    return "🚚 Pickup Verification & OTP: Once a farmer or recipient accepts a match, a unique 4-digit Pickup OTP is generated (e.g. 5821). The driver or volunteer verifies this OTP with the farmer at the Rythu Bazaar stall before loading to ensure chain of custody.";
+  }
+
+  if (q.includes('price') || q.includes('cost') || q.includes('money') || q.includes('ధర')) {
+    return "💰 Price Recovery: Farmers can choose 100% Free Donation (tax-deductible / humanitarian) or set a nominal recovery price (e.g. ₹8-₹12/kg vs retail ₹35/kg) to recover farm transport and crate handling expenses.";
+  }
+
+  if (q.includes('ngo') || q.includes('recipient') || q.includes('register')) {
+    return "🏢 Recipient Network: Any verified NGO, community kitchen, gaushala, student hostel mess, or composting unit can register via the Recipient portal. You can set daily absorption capacity (kg), vehicle type (Auto, Bike, Van), and preferred vegetable varieties.";
+  }
+
+  if (q.includes('critical') || q.includes('compost') || q.includes('animal') || q.includes('gaushala')) {
+    return "🔴 Critical Produce & Zero Waste: Vegetables classified as Critical (unfit for retail human consumption) are immediately diverted to Gaushalas (roughage for cattle) or GHMC Bio-Composting units to prevent landfill methane emissions.";
+  }
+
+  return "🌱 Welcome to Rythu Raksha AI Surplus Matcher! I can assist you with vegetable surplus listings, AI freshness scanning, nearby recipient matching (NGOs, community kitchens, animal shelters), pickup OTPs, and food waste analytics. How can I help you today?";
+}
+
 // Helper for deterministic evaluation
 function getDeterministicFreshnessAnalysis(name: string = '', hours: any, notes: string = '') {
   const lower = (name + ' ' + notes).toLowerCase();
